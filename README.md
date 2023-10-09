@@ -1,7 +1,7 @@
 # What this project do?
 
 - I am using smocker.dev for mock API for our tester and the process is quite time-consuming.
-- So I build this tool so that anyone use mocker.dev can create mock just with cURL command and Response JSON.
+- So I build this tool so that anyone use mocker.dev can create mock just with cURL command and response JSON with HTTP status code.
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
