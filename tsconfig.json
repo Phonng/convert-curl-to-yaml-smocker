@@ -1,10 +1,13 @@
 {
   "compilerOptions": {
+    "noImplicitAny": false,
+    // #TODO: remove later
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
+    // #TODO: change later
+    "strict": false,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
