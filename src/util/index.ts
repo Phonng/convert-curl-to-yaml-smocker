@@ -52,11 +52,11 @@ export function convertResponseToResponseMock(object) {
 	if (!object) return
 	return object.replaceAll('\n', '')
 }
-export function jsonToYaml(jsonObj, indent = '  ') {
+export function jsonToYaml(jsonObj: object, indent = '  ') {
 	let yamlString = '';
 
 	for (const key in jsonObj) {
-		if (jsonObj.hasOwnProperty(key)) {
+		if (Object.prototype.hasOwnProperty.call(jsonObj, key)) {
 			const value = jsonObj[key];
 			const valueType = typeof value;
 
