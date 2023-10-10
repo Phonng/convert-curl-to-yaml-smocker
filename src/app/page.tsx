@@ -19,12 +19,7 @@ type Inputs = {
 
 export default function Home() {
   const [mockData, setMockData] = useState<string | undefined>();
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<Inputs>();
+  const { register, handleSubmit } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     if (data.httpStatus && data.curl && data.response) {
       const request = convertCurlToRequestObject(data.curl);
