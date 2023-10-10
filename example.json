@@ -1,0 +1,44 @@
+
+// in
+
+curl 'https://mocker-api-dev.kiotfinance.vn/message/sending-quality?merchant_code=RETAIL&merchant_id=11&partner=ZALO' \
+  -H 'authority: mocker-api-dev.kiotfinance.vn' \
+  -H 'accept: */*' \
+  -H 'accept-language: en-US,en;q=0.9' \
+  -H 'authorization: test' \
+  -H 'cache-control: no-cache' \
+  -H 'origin: https://d2i0318lb40ebb.cloudfront.net' \
+  -H 'pragma: no-cache' \
+  -H 'referer: https://d2i0318lb40ebb.cloudfront.net/' \
+  -H 'sec-ch-ua: "Google Chrome";v="117", "Not;A=Brand";v="8", "Chromium";v="117"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Windows"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: cross-site' \
+  -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36' \
+  --compressed
+
+
+{
+  "merchant_id": 1,
+  "merchant_code": "FNB",
+  "partner": "ZALO",
+  "oa_current_quality": "UNDEFINED",
+  "oa_7day_quality": "UNDEFINED"
+}
+
+// out
+
+- request:
+    path: /message/sending-quality
+    query_params:
+      merchant_id: 2
+      merchant_code: "RETAIL"
+      partner: "ZALO"
+  response:
+    headers:
+      Content-Type: application/json
+      Authorization: test
+    body: >
+      {"merchant_id": 1,"merchant_code": "FNB","partner": "ZALO","oa_current_quality": "UNDEFINED","oa_7day_quality": "UNDEFINED"}
