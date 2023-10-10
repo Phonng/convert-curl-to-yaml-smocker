@@ -25,7 +25,7 @@ export function convertCurlToRequestObject(curlCommand) {
 			}
 			continue
 		}
-		if (line.trim().includes("accept: */*")) {
+		if (line.trim().includes("accept: */*")) {//#TODO: check why
 			continue
 		}
 		if (line.trim().startsWith("-H")) {
@@ -33,9 +33,8 @@ export function convertCurlToRequestObject(curlCommand) {
 
 			if (headerMatches) {
 				const headerName = headerMatches[1];
-				const headerValue = headerName === 'sec-ch-ua' && headerMatches[2] ? `'${headerMatches[2]}'` : headerMatches[2];
-				if (headerName === 'sec-ch-ua')
-					console.log('headerValue', headerValue);
+				const headerValue = headerName === 'sec-ch-ua' && headerMatches[2] ? `'${headerMatches[2]}'` : headerMatches[2]; //#TODO: check why
+
 				if (!requestObject.headers) {
 					requestObject.headers = {};
 				}
