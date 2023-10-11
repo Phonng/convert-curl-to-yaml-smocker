@@ -83,9 +83,11 @@ export function getAcceptProxyOption(curl: string) {
 			const urlParts = new URL(url);
 			const splitEndpoint = urlParts.pathname ? urlParts.pathname.split('/') : urlParts.pathname
 			const firstEndPoint = splitEndpoint?.[1]
-			requestObject.path = {
-				matcher: 'ShouldMatch',
-				value: `/${firstEndPoint}/.*`
+			requestObject.request = {
+				path: {
+					matcher: 'ShouldMatch',
+					value: `/${firstEndPoint}/.*`
+				}
 			}
 			requestObject.proxy = {
 				host: urlParts.origin,
@@ -93,6 +95,6 @@ export function getAcceptProxyOption(curl: string) {
 			}
 		}
 	}
-	return { request: requestObject };
+	return requestObject;
 
 }
