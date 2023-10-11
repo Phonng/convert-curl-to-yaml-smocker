@@ -1,10 +1,11 @@
 
-export function convertCurlToRequestObject(curlCommand) {
+export function convertCurlToRequestObject(curlCommand: string, options: {
+	acceptProxy: boolean
+}) {
 	if (!curlCommand) return
 	const requestObject = {
 		path: "",
 		method: "GET", // Default method is GET
-		query_params: {},
 	};
 
 	const lines = curlCommand.split("\n");
@@ -15,13 +16,27 @@ export function convertCurlToRequestObject(curlCommand) {
 			if (urlMatches) {
 				const url = urlMatches[1];
 				const urlParts = new URL(url);
+				if (options.acceptProxy) {
+					const splitEndpoint = urlParts.pathname ? urlParts.pathname.split('/') : urlParts.pathname
+					const firstEndPoint = splitEndpoint?.[1]
+					requestObject.path = {
+						matcher: 'ShouldMatch',
+						value: `/${firstEndPoint}/.*`
+					}
+					requestObject.proxy = {
+						host: urlParts.origin,
+						skip_verify_tls: true
+					}
+				} else {
+					requestObject.query_params = {}
+					requestObject.path = urlParts.pathname;
+					const queryParams = urlParts.searchParams;
 
-				requestObject.path = urlParts.pathname;
-				const queryParams = urlParts.searchParams;
-
-				for (const [param, value] of queryParams) {
-					requestObject.query_params[param] = value;
+					for (const [param, value] of queryParams) {
+						requestObject.query_params[param] = value;
+					}
 				}
+
 			}
 			continue
 		}

@@ -1,7 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   convertCurlToRequestObject,
@@ -15,14 +18,20 @@ type Inputs = {
   curl: string;
   response: string;
   httpStatus: number;
+  acceptProxy: boolean;
 };
 
 export default function Home() {
   const [mockData, setMockData] = useState<string | undefined>();
-  const { register, handleSubmit } = useForm<Inputs>();
+  const form = useForm<Inputs>();
+  const { register, handleSubmit } = form;
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     if (data.httpStatus && data.curl && data.response) {
-      const request = convertCurlToRequestObject(data.curl);
+      const options = {
+        acceptProxy: data.acceptProxy,
+      };
+      const request = convertCurlToRequestObject(data.curl, options);
+
       const status = data.httpStatus;
       const body = convertResponseToResponseMock(data.response);
       const nextMockData = jsonToYaml({
@@ -51,39 +60,64 @@ export default function Home() {
         </div>
         <div className="flex gap-12 m-auto">
           <div>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="flex flex-col gap-4  w-[400px]">
-                <div>
-                  <div className="text-xl">cURL command</div>
-                  <div className="">
-                    <Textarea
-                      className="h-[300px]"
-                      placeholder="Paste cURL command. You can use generated string by Google Chrome DevTools!"
-                      {...register("curl")}
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div className="text-xl">Response JSON</div>
+            <Form {...form}>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="flex flex-col gap-4  w-[400px]">
                   <div>
-                    <Input
-                      placeholder="HTTP status code"
-                      {...register("httpStatus")}
+                    <div className="text-xl">cURL command</div>
+                    <div className="">
+                      <Textarea
+                        className="h-[300px]"
+                        placeholder="Paste cURL command. You can use generated string by Google Chrome DevTools!"
+                        {...register("curl")}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <FormField
+                      control={form.control}
+                      name="acceptProxy"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
+                          <FormControl>
+                            <Checkbox
+                              id="acceptProxy"
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <Label
+                            htmlFor="acceptProxy"
+                            className="cursor-pointer"
+                          >
+                            Accept proxy
+                          </Label>
+                        </FormItem>
+                      )}
                     />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <div className="text-xl">Response JSON</div>
+                    <div>
+                      <Input
+                        placeholder="HTTP status code"
+                        {...register("httpStatus")}
+                      />
+                    </div>
+                    <div>
+                      <Textarea
+                        className="h-[200px]"
+                        placeholder="JSON response "
+                        {...register("response")}
+                      />
+                    </div>
                   </div>
                   <div>
-                    <Textarea
-                      className="h-[200px]"
-                      placeholder="JSON response "
-                      {...register("response")}
-                    />
+                    <Button type="submit">Convert</Button>
                   </div>
                 </div>
-                <div>
-                  <Button type="submit">Convert</Button>
-                </div>
-              </div>
-            </form>
+              </form>
+            </Form>
           </div>
           <div className="bg-red w-[400px]">
             <div className="text-xl">Smocker</div>
