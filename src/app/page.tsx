@@ -16,6 +16,12 @@ import {
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import { TooltipTrigger } from "@radix-ui/react-tooltip";
 
 type Inputs = {
   curl: string;
@@ -128,8 +134,18 @@ export default function Home() {
           </div>
           <div className="bg-red w-[400px] relative cursor-pointer">
             <div className="text-xl">Smocker</div>
-            <div className="absolute right-0" onClick={() => copy(mockData)}>
-              <CopyIcon />
+            <div
+              className="absolute right-1 mt-1 hover:text-sky-400	 active:text-sky-600 "
+              onClick={() => copy(mockData || "")}
+            >
+              <TooltipProvider delayDuration={100} skipDelayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <CopyIcon />
+                  </TooltipTrigger>
+                  <TooltipContent>Copy to clipboard</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <Textarea
               className="h-[633px]"
