@@ -49,7 +49,9 @@ export function convertCurlToRequestObject(curlCommand) {
 
 export function convertResponseToResponseMock(object) {
 	if (!object) return
-	return object.replaceAll('\n', '')
+	const parseJson = JSON.parse(object.replaceAll('\n', ''))
+	return JSON.stringify(parseJson, null, 8).replace(/\n(\s*)}$/, '\n      $1}');
+
 }
 export function jsonToYaml(jsonObj: object, indent = '  ') {
 	let yamlString = '';
