@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   convertCurlToRequestObject,
   convertResponseToResponseMock,
+  getAcceptProxyOption,
   jsonToYaml,
 } from "@/util";
 import { useState } from "react";
@@ -27,26 +28,28 @@ export default function Home() {
   const { register, handleSubmit } = form;
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     if (data.httpStatus && data.curl && data.response) {
-      const options = {
-        acceptProxy: data.acceptProxy,
-      };
-      const request = convertCurlToRequestObject(data.curl, options);
+      const request = convertCurlToRequestObject(data.curl);
 
       const status = data.httpStatus;
       const body = convertResponseToResponseMock(data.response);
-      const nextMockData = jsonToYaml({
+      let nextMockData = jsonToYaml({
         request,
         response: {
           status,
           body,
         },
       });
+
       let formatMockData = "-" + nextMockData.slice(1);
       const lines = formatMockData.split("body: "); //format response body
       lines[0] = lines[0] + "body: >";
       lines[1] = "      " + lines[1];
       formatMockData = lines.join("\n");
-
+      if (data.acceptProxy) {
+        let requestProxyOption = jsonToYaml(getAcceptProxyOption(data.curl));
+        requestProxyOption = "-" + requestProxyOption.slice(1);
+        formatMockData = requestProxyOption + formatMockData;
+      }
       setMockData(formatMockData);
     }
   };
@@ -122,7 +125,7 @@ export default function Home() {
           <div className="bg-red w-[400px]">
             <div className="text-xl">Smocker</div>
             <Textarea
-              className="h-[600px]"
+              className="h-[633px]"
               placeholder="mocker yaml will display here"
               value={mockData}
               onChange={(event) => setMockData(event.target.value)}

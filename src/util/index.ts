@@ -1,7 +1,5 @@
 
-export function convertCurlToRequestObject(curlCommand: string, options: {
-	acceptProxy: boolean
-}) {
+export function convertCurlToRequestObject(curlCommand: string) {
 	if (!curlCommand) return
 	const requestObject = {
 		path: "",
@@ -16,27 +14,13 @@ export function convertCurlToRequestObject(curlCommand: string, options: {
 			if (urlMatches) {
 				const url = urlMatches[1];
 				const urlParts = new URL(url);
-				if (options.acceptProxy) {
-					const splitEndpoint = urlParts.pathname ? urlParts.pathname.split('/') : urlParts.pathname
-					const firstEndPoint = splitEndpoint?.[1]
-					requestObject.path = {
-						matcher: 'ShouldMatch',
-						value: `/${firstEndPoint}/.*`
-					}
-					requestObject.proxy = {
-						host: urlParts.origin,
-						skip_verify_tls: true
-					}
-				} else {
-					requestObject.query_params = {}
-					requestObject.path = urlParts.pathname;
-					const queryParams = urlParts.searchParams;
+				requestObject.query_params = {}
+				requestObject.path = urlParts.pathname;
+				const queryParams = urlParts.searchParams;
 
-					for (const [param, value] of queryParams) {
-						requestObject.query_params[param] = value;
-					}
+				for (const [param, value] of queryParams) {
+					requestObject.query_params[param] = value;
 				}
-
 			}
 			continue
 		}
@@ -85,4 +69,30 @@ export function jsonToYaml(jsonObj: object, indent = '  ') {
 	}
 
 	return yamlString;
+}
+
+export function getAcceptProxyOption(curl: string) {
+	if (!curl) return ''
+	const lines = curl.split("\n");
+	const firstLine = lines?.[0]
+	const requestObject = {}
+	if (firstLine.trim().startsWith("curl")) {
+		const urlMatches = /'([^']+)'/g.exec(firstLine);
+		if (urlMatches) {
+			const url = urlMatches[1];
+			const urlParts = new URL(url);
+			const splitEndpoint = urlParts.pathname ? urlParts.pathname.split('/') : urlParts.pathname
+			const firstEndPoint = splitEndpoint?.[1]
+			requestObject.path = {
+				matcher: 'ShouldMatch',
+				value: `/${firstEndPoint}/.*`
+			}
+			requestObject.proxy = {
+				host: urlParts.origin,
+				skip_verify_tls: true
+			}
+		}
+	}
+	return { request: requestObject };
+
 }
