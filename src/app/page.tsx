@@ -1,5 +1,6 @@
 "use client";
 
+import CopyIcon from "@/assets/CopyIcon";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
@@ -14,6 +15,7 @@ import {
 } from "@/util";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 
 type Inputs = {
   curl: string;
@@ -24,6 +26,8 @@ type Inputs = {
 
 export default function Home() {
   const [mockData, setMockData] = useState<string | undefined>();
+  // eslint-disable-next-line no-unused-vars
+  const [value, copy] = useCopyToClipboard();
   const form = useForm<Inputs>();
   const { register, handleSubmit } = form;
   const onSubmit: SubmitHandler<Inputs> = (data) => {
@@ -122,8 +126,11 @@ export default function Home() {
               </form>
             </Form>
           </div>
-          <div className="bg-red w-[400px]">
+          <div className="bg-red w-[400px] relative cursor-pointer">
             <div className="text-xl">Smocker</div>
+            <div className="absolute right-0" onClick={() => copy(mockData)}>
+              <CopyIcon />
+            </div>
             <Textarea
               className="h-[633px]"
               placeholder="mocker yaml will display here"
