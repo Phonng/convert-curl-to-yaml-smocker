@@ -97,6 +97,7 @@ export default function Home() {
                               id="acceptProxy"
                               checked={field.value}
                               onCheckedChange={field.onChange}
+                              aria-label="accept proxy"
                             />
                           </FormControl>
                           <Label
@@ -126,7 +127,9 @@ export default function Home() {
                     </div>
                   </div>
                   <div>
-                    <Button type="submit">Convert</Button>
+                    <Button aria-label="convert" type="submit">
+                      Convert
+                    </Button>
                   </div>
                 </div>
               </form>
@@ -140,7 +143,7 @@ export default function Home() {
             >
               <TooltipProvider delayDuration={100} skipDelayDuration={100}>
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger aria-label="copy-icon">
                     <CopyIcon />
                   </TooltipTrigger>
                   <TooltipContent>Copy to clipboard</TooltipContent>
