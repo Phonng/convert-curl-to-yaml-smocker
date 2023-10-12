@@ -1,5 +1,5 @@
 
-export function convertCurlToRequestObject(curlCommand: string) {
+export function convertCurlToRequestObject(curlCommand: string, options: { ignoreHeader: boolean }) {
 	if (!curlCommand) return
 	const requestObject = {
 		path: "",
@@ -14,9 +14,11 @@ export function convertCurlToRequestObject(curlCommand: string) {
 			if (urlMatches) {
 				const url = urlMatches[1];
 				const urlParts = new URL(url);
-				requestObject.query_params = {}
 				requestObject.path = urlParts.pathname;
 				const queryParams = urlParts.searchParams;
+
+				if (queryParams.size)
+					requestObject.query_params = {}
 
 				for (const [param, value] of queryParams) {
 					requestObject.query_params[param] = value;
@@ -27,7 +29,7 @@ export function convertCurlToRequestObject(curlCommand: string) {
 		if (line.trim().includes("accept: */*")) {//#TODO: check why
 			continue
 		}
-		if (line.trim().startsWith("-H")) {
+		if (line.trim().startsWith("-H") && !options.ignoreHeader) {
 			const headerMatches = /-H '([^:]+): ([^']+)'/g.exec(line);
 
 			if (headerMatches) {
