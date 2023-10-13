@@ -28,6 +28,7 @@ type Inputs = {
   response: string;
   httpStatus: number;
   acceptProxy: boolean;
+  ignoreHeader: boolean;
 };
 
 export default function Home() {
@@ -38,7 +39,10 @@ export default function Home() {
   const { register, handleSubmit } = form;
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     if (data.httpStatus && data.curl && data.response) {
-      const request = convertCurlToRequestObject(data.curl);
+      const options = {
+        ignoreHeader: data.ignoreHeader,
+      };
+      const request = convertCurlToRequestObject(data.curl, options);
 
       const status = data.httpStatus;
       const body = convertResponseToResponseMock(data.response);
@@ -109,6 +113,28 @@ export default function Home() {
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name="ignoreHeader"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
+                          <FormControl>
+                            <Checkbox
+                              id="ignoreHeader"
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              aria-label="ignore header"
+                            />
+                          </FormControl>
+                          <Label
+                            htmlFor="ignoreHeader"
+                            className="cursor-pointer"
+                          >
+                            Ignore Header
+                          </Label>
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   <div className="flex flex-col gap-2">
                     <div className="text-xl">Response JSON</div>
@@ -136,22 +162,24 @@ export default function Home() {
             </Form>
           </div>
           <div className="bg-red w-[400px] relative cursor-pointer">
-            <div className="text-xl">Smocker</div>
-            <div
-              className="absolute right-1 mt-1 hover:text-sky-400	 active:text-sky-600 "
-              onClick={() => copy(mockData || "")}
-            >
-              <TooltipProvider delayDuration={100} skipDelayDuration={100}>
-                <Tooltip>
-                  <TooltipTrigger aria-label="copy-icon">
-                    <CopyIcon />
-                  </TooltipTrigger>
-                  <TooltipContent>Copy to clipboard</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <div className="flex">
+              <div className="text-xl mr-1">Smockerd</div>
+              <div
+                className=" hover:text-sky-400	alignCenter flex active:text-sky-600 "
+                onClick={() => copy(mockData || "")}
+              >
+                <TooltipProvider delayDuration={100} skipDelayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger aria-label="copy-icon">
+                      <CopyIcon />
+                    </TooltipTrigger>
+                    <TooltipContent>Copy to clipboard</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
             </div>
             <Textarea
-              className="h-[633px]"
+              className="h-[633px] pt-5"
               placeholder="mocker yaml will display here"
               value={mockData}
               onChange={(event) => setMockData(event.target.value)}

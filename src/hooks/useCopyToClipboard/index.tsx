@@ -15,8 +15,6 @@ export function useCopyToClipboard(): [CopiedValue, CopyFn] {
 
     // Try to save to clipboard then save it in the state if worked
     try {
-      console.log(text);
-
       await navigator.clipboard.writeText(text);
       setCopiedText(text);
       return true;
