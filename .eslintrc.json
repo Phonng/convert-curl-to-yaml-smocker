@@ -2,10 +2,11 @@
   "extends": ["eslint:recommended", "next/core-web-vitals"],
 
   "rules": {
-    "no-unused-vars": "warn",
     "no-nested-ternary": "warn",
 
-    "require-await": "off"
+    "require-await": "off",
+    "no-unused-vars": [2, { "args": "all", "argsIgnorePattern": "^_" }],
+    "no-warning-comments": 0
   },
   "globals": {}
 }
