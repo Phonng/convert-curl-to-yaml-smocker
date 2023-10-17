@@ -1,13 +1,17 @@
 {
   "compilerOptions": {
-    "noImplicitAny": false,
+    // "noImplicitAny": false,
     // #TODO: remove later
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     // #TODO: change later
-    "strict": false,
+    // "strict": false,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -22,9 +26,19 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "strict": false
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
