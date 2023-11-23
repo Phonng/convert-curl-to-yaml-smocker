@@ -5,10 +5,11 @@ export function convertCurlToRequestObject(curlCommand: string, options: { ignor
     path: "",
     method: "GET", // Default method is GET
   };
-  const dataLine = curlCommand.match(/(--data|--data-raw) '({[\s\S]*?})'/);
+  const dataLine = curlCommand.match(/(--data|--data-raw)\s+'([^']*)'/);
+
   if (dataLine) {
-    const condensedData = dataLine[1].replace(/\s+/g, ' ');
-    curlCommand = curlCommand.replace(dataLine[1], condensedData);
+    curlCommand = dataLine[0].replaceAll(/\n+/g, '').replaceAll(" ", "");
+
     requestObject.method = 'POST'
   }
 
@@ -50,16 +51,27 @@ export function convertCurlToRequestObject(curlCommand: string, options: { ignor
       }
       continue
     }
-    if ((line.trim().startsWith("--data") || line.trim().startsWith("--data-raw")) && !options.ignoreHeader) {
+    if ((line.trim().startsWith("--data") || line.trim().startsWith("--data-raw"))) {
 
-      const headerMatches = /(--data|--data-raw) '(\{(?:.|\n)*?\})'/g.exec(line);
+      const headerMatches = /(--data|--data-raw)'(\{(?:.|\n)*?\}|\[(?:.|\n)*?\])'/g.exec(line);
 
       if (headerMatches) {
         const headerValue = isValidJSON(headerMatches[2]) ? JSON.parse(headerMatches[2]) : headerMatches[2];
+        let body = ""
         if (headerValue) {
-          const body = convertToBody(headerValue)
-          requestObject.body = body;
+          if (Array.isArray(headerValue)) {
+            // Handle array of objects
+            headerValue.forEach((item, index) => {
+              const newPrefix = `[${index}].`;
+              body = convertToBody(item, newPrefix);
+            });
+          } else {
+            // Handle single object
+            body = convertToBody(headerValue);
+          }
         }
+        requestObject.body = body;
+
       }
       continue
     }
@@ -110,14 +122,14 @@ const convertToBody = (obj, prefix = '') => {
           //if array it will display 'items[0].id' not items[0].id
           body = { ...body, ...quoteObjectKeys(nestedObj) };
         } else {
-          body[`${newPrefix}${key}`] = item;
+          body[`'${newPrefix}${key}'`] = item;
         }
       });
     } else if (typeof obj[key] === 'object') {
       const nestedObj = convertToBody(obj[key], `${prefix}${key}.`);
       body = { ...body, ...nestedObj };
     } else {
-      body[`${prefix}${key}`] = obj[key];
+      body[`'${prefix}${key}'`] = obj[key];
     }
   }
 
