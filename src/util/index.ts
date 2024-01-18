@@ -57,13 +57,15 @@ export function convertCurlToRequestObject(curlCommand: string, options: { ignor
 
       if (headerMatches) {
         const headerValue = isValidJSON(headerMatches[2]) ? JSON.parse(headerMatches[2]) : headerMatches[2];
-        let body = ""
+        let body
         if (headerValue) {
           if (Array.isArray(headerValue)) {
             // Handle array of objects
+            body = []
             headerValue.forEach((item, index) => {
               const newPrefix = `[${index}].`;
-              body = convertToBody(item, newPrefix);
+
+              body[index] = convertToBody(item, newPrefix)
             });
           } else {
             // Handle single object
@@ -93,20 +95,31 @@ export function convertResponseToResponseMock(object) {
 }
 export function jsonToYaml(jsonObj: object, indent = '  ') {
   let yamlString = '';
+  if (!jsonObj) return yamlString;
+  if (Array.isArray(jsonObj)) {
+    for (const object of jsonObj) {
+      yamlString += jsonToYaml(object, `${indent}  `);
+    }
+  }
+  else {
+    for (const key in jsonObj) {
+      if (Object.prototype.hasOwnProperty.call(jsonObj, key)) {
+        const value = jsonObj[key];
+        const valueType = typeof value;
 
-  for (const key in jsonObj) {
-    if (Object.prototype.hasOwnProperty.call(jsonObj, key)) {
-      const value = jsonObj[key];
-      const valueType = typeof value;
+        if (valueType === 'object' && !Array.isArray(value)) {
+          yamlString += `${indent}${key}: \n${jsonToYaml(value, `${indent}  `)}`;
+        } else if (valueType === 'object' && Array.isArray(value)) {
+          yamlString += `${indent}${key}:\n`
+          yamlString += jsonToYaml(value, `${indent}  `);
 
-      if (valueType === 'object' && !Array.isArray(value)) {
-        yamlString += `${indent}${key}:\n${jsonToYaml(value, `${indent}  `)}`;
-      } else {
-        yamlString += `${indent}${key}: ${value}\n`;
+        }
+        else {
+          yamlString += `${indent}${key}: ${value}\n`;
+        }
       }
     }
   }
-
   return yamlString;
 }
 
@@ -129,10 +142,10 @@ const convertToBody = (obj, prefix = '') => {
       const nestedObj = convertToBody(obj[key], `${prefix}${key}.`);
       body = { ...body, ...nestedObj };
     } else {
+
       body[`'${prefix}${key}'`] = obj[key];
     }
   }
-
   return body;
 };
 
