@@ -34,8 +34,6 @@ export default function Home() {
   const form = useForm<Inputs>()
   const { register, handleSubmit } = form
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log('data', data)
-
     if (data.httpStatus && data.curl && data.response) {
       const options = {
         ignoreHeader: data.ignoreHeader,
@@ -62,6 +60,8 @@ export default function Home() {
         requestProxyOption = '-' + requestProxyOption.slice(1)
         formatMockData = requestProxyOption + formatMockData
       }
+      console.log(formatMockData)
+
       setMockData(formatMockData)
     }
   }

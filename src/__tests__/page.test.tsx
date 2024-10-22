@@ -2,7 +2,7 @@ import { expect, test } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import Page from '../app/page'
 import userEvent from '@testing-library/user-event'
-import { GET_CURL_COMMAND, SUCCESS_STATUS_CODES, GET_RESPONSE, GET_SMOCKERD } from './constant'
+import { getResponseArray } from './constant'
 
 class ResizeObserver {
   observe() {}
@@ -26,10 +26,12 @@ test('Page', async () => {
   expect(httpStatus).not.toBeNull()
   expect(mockerResult).not.toBeNull()
 
-  await userEvent.type(curl, GET_CURL_COMMAND)
-  await userEvent.type(httpStatus, `${SUCCESS_STATUS_CODES}`)
-  await userEvent.type(response, GET_RESPONSE)
+  await userEvent.type(curl, getResponseArray.GET_CURL_COMMAND)
+  await userEvent.type(httpStatus, `${getResponseArray.SUCCESS_STATUS_CODES}`)
+  await userEvent.type(response, getResponseArray.GET_RESPONSE)
 
-  userEvent.click(submitButton)
-  expect(mockerResult).toHaveProperty('value', GET_SMOCKERD)
+  await userEvent.click(submitButton)
+  console.log('mockerResult', mockerResult)
+
+  expect(mockerResult).toHaveProperty('value', getResponseArray.GET_SMOCKERD)
 })
