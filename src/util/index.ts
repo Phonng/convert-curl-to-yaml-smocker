@@ -90,6 +90,7 @@ export function convertCurlToRequestObject(curlCommand: string, options: { ignor
 export function convertResponseToResponseMock(object) {
   if (!object) return
   const parseJson = JSON.parse(object.replaceAll('\n', ''))
+
   return JSON.stringify(parseJson, null, 8).replace(/\n(\s*)}$/, '\n      $1}');
 
 }

@@ -1,72 +1,70 @@
-"use client";
+'use client'
 
-import CopyIcon from "@/assets/CopyIcon";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import CopyIcon from '@/assets/CopyIcon'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   convertCurlToRequestObject,
   convertResponseToResponseMock,
   getAcceptProxyOption,
   jsonToYaml,
-} from "@/util";
-import { useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
-import { TooltipTrigger } from "@radix-ui/react-tooltip";
+} from '@/util'
+import { useState } from 'react'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard'
+import { Tooltip, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
+import { TooltipTrigger } from '@radix-ui/react-tooltip'
 
 type Inputs = {
-  curl: string;
-  response: string;
-  httpStatus: number;
-  acceptProxy: boolean;
-  ignoreHeader: boolean;
-};
+  curl: string
+  response: string
+  httpStatus: number
+  acceptProxy: boolean
+  ignoreHeader: boolean
+}
 
 export default function Home() {
-  const [mockData, setMockData] = useState<string | undefined>();
+  const [mockData, setMockData] = useState<string | undefined>()
   // eslint-disable-next-line no-unused-vars
-  const [value, copy] = useCopyToClipboard();
-  const form = useForm<Inputs>();
-  const { register, handleSubmit } = form;
+  const [value, copy] = useCopyToClipboard()
+  const form = useForm<Inputs>()
+  const { register, handleSubmit } = form
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     if (data.httpStatus && data.curl && data.response) {
       const options = {
         ignoreHeader: data.ignoreHeader,
-      };
-      const request = convertCurlToRequestObject(data.curl, options);
+      }
+      const request = convertCurlToRequestObject(data.curl, options)
 
-      const status = data.httpStatus;
-      const body = convertResponseToResponseMock(data.response);
+      const status = data.httpStatus
+      const body = convertResponseToResponseMock(data.response)
       let nextMockData = jsonToYaml({
         request,
         response: {
           status,
           body,
         },
-      });
+      })
 
-      let formatMockData = "-" + nextMockData.slice(1);
-      const lines = formatMockData.split("body: "); //format response body
-      lines[0] = lines[0] + "body: >";
-      lines[1] = "      " + lines[1];
-      formatMockData = lines.join("\n");
+      let formatMockData = '-' + nextMockData.slice(1)
+      const lines = formatMockData.split('body: ') //format response body
+      lines[0] = lines[0] + 'body: >'
+      lines[1] = '      ' + lines[1]
+      formatMockData = lines.join('\n')
       if (data.acceptProxy) {
-        let requestProxyOption = jsonToYaml(getAcceptProxyOption(data.curl));
-        requestProxyOption = "-" + requestProxyOption.slice(1);
-        formatMockData = requestProxyOption + formatMockData;
+        let requestProxyOption = jsonToYaml(getAcceptProxyOption(data.curl))
+        requestProxyOption = '-' + requestProxyOption.slice(1)
+        formatMockData = requestProxyOption + formatMockData
       }
-      setMockData(formatMockData);
+      console.log(formatMockData)
+
+      setMockData(formatMockData)
     }
-  };
+  }
 
   return (
     <div className="bg-white h-[100vh]">
@@ -84,9 +82,10 @@ export default function Home() {
                     <div className="text-xl">cURL command</div>
                     <div className="">
                       <Textarea
+                        id="curl"
                         className="h-[300px]"
                         placeholder="Paste cURL command. You can use generated string by Google Chrome DevTools!"
-                        {...register("curl")}
+                        {...register('curl')}
                       />
                     </div>
                   </div>
@@ -104,10 +103,7 @@ export default function Home() {
                               aria-label="accept proxy"
                             />
                           </FormControl>
-                          <Label
-                            htmlFor="acceptProxy"
-                            className="cursor-pointer"
-                          >
+                          <Label htmlFor="acceptProxy" className="cursor-pointer">
                             Accept proxy
                           </Label>
                         </FormItem>
@@ -126,10 +122,7 @@ export default function Home() {
                               aria-label="ignore header"
                             />
                           </FormControl>
-                          <Label
-                            htmlFor="ignoreHeader"
-                            className="cursor-pointer"
-                          >
+                          <Label htmlFor="ignoreHeader" className="cursor-pointer">
                             Ignore Header
                           </Label>
                         </FormItem>
@@ -139,16 +132,13 @@ export default function Home() {
                   <div className="flex flex-col gap-2">
                     <div className="text-xl">Response JSON</div>
                     <div>
-                      <Input
-                        placeholder="HTTP status code"
-                        {...register("httpStatus")}
-                      />
+                      <Input placeholder="HTTP status code" {...register('httpStatus')} />
                     </div>
                     <div>
                       <Textarea
                         className="h-[200px]"
-                        placeholder="JSON response "
-                        {...register("response")}
+                        placeholder="JSON response"
+                        {...register('response')}
                       />
                     </div>
                   </div>
@@ -166,7 +156,7 @@ export default function Home() {
               <div className="text-xl mr-1">Smockerd</div>
               <div
                 className=" hover:text-sky-400	alignCenter flex active:text-sky-600 "
-                onClick={() => copy(mockData || "")}
+                onClick={() => copy(mockData || '')}
               >
                 <TooltipProvider delayDuration={100} skipDelayDuration={100}>
                   <Tooltip>
@@ -188,5 +178,5 @@ export default function Home() {
         </div>
       </main>
     </div>
-  );
+  )
 }
