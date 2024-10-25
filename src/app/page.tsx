@@ -60,8 +60,6 @@ export default function Home() {
         requestProxyOption = '-' + requestProxyOption.slice(1)
         formatMockData = requestProxyOption + formatMockData
       }
-      console.log(formatMockData)
-
       setMockData(formatMockData)
     }
   }
