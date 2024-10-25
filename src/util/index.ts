@@ -1,20 +1,22 @@
 
 export function convertCurlToRequestObject(curlCommand: string, options: { ignoreHeader: boolean }) {
   if (!curlCommand) return
+  console.log('curlCommand', curlCommand);
   const requestObject = {
     path: "",
     method: "GET", // Default method is GET
   };
   const dataLine = curlCommand.match(/(--data|--data-raw)\s+'([^']*)'/);
 
+
   if (dataLine) {
-    curlCommand = dataLine[0].replaceAll(/\n+/g, '').replaceAll(" ", "");
+    // curlCommand = dataLine[0].replaceAll(/\n+/g, '').replaceAll(" ", "");
 
     requestObject.method = 'POST'
   }
 
-
   const lines = curlCommand.split("\n");
+
 
   for (const line of lines) {
     if (line.trim().startsWith("curl")) {
@@ -37,8 +39,10 @@ export function convertCurlToRequestObject(curlCommand: string, options: { ignor
     if (line.trim().includes("accept: */*")) {//#TODO: check why
       continue
     }
-    if ((line.trim().startsWith("-H") || line.trim().startsWith("--header")) && !options.ignoreHeader) {
-      const headerMatches = /(-H|--header) '([^:]+): ([^']+)'/g.exec(line);
+    if ((line.trim().includes("-H") || line.trim().includes("--header")) && !options.ignoreHeader) {
+      const formatLine = line.replaceAll(/\n+/g, '').replaceAll(" ", "")
+      const headerMatches = /(-H|--header) '([^:]+): ([^']+)'/g.exec(formatLine);
+
 
       if (headerMatches) {
         const headerName = headerMatches[2];
@@ -52,8 +56,8 @@ export function convertCurlToRequestObject(curlCommand: string, options: { ignor
       continue
     }
     if ((line.trim().startsWith("--data") || line.trim().startsWith("--data-raw"))) {
-
-      const headerMatches = /(--data|--data-raw)'(\{(?:.|\n)*?\}|\[(?:.|\n)*?\])'/g.exec(line);
+      const formatLine = line.replaceAll(/\n+/g, '').replaceAll(" ", "")
+      const headerMatches = /(--data|--data-raw)'(\{(?:.|\n)*?\}|\[(?:.|\n)*?\])'/g.exec(formatLine);
 
       if (headerMatches) {
         const headerValue = isValidJSON(headerMatches[2]) ? JSON.parse(headerMatches[2]) : headerMatches[2];
@@ -73,7 +77,6 @@ export function convertCurlToRequestObject(curlCommand: string, options: { ignor
           }
         }
         requestObject.body = body;
-
       }
       continue
     }
@@ -136,15 +139,17 @@ const convertToBody = (obj, prefix = '') => {
           //if array it will display 'items[0].id' not items[0].id
           body = { ...body, ...quoteObjectKeys(nestedObj) };
         } else {
-          body[`'${newPrefix}${key}'`] = item;
+          if (item) {
+            body[`${newPrefix}${key}`] = item;
+          }
         }
       });
     } else if (typeof obj[key] === 'object') {
       const nestedObj = convertToBody(obj[key], `${prefix}${key}.`);
       body = { ...body, ...nestedObj };
     } else {
-
-      body[`'${prefix}${key}'`] = obj[key];
+      if (!obj[key]) continue
+      body[`${prefix}${key}`] = obj[key];
     }
   }
   return body;
