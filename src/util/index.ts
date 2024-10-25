@@ -124,6 +124,7 @@ export function jsonToYaml(jsonObj: object, indent = '  ') {
       }
     }
   }
+  console.log(1)
   return yamlString;
 }
 
